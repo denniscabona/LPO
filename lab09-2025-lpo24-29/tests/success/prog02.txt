@@ -1,0 +1,6 @@
+var x=1;
+x=x+1;
+var y=true;
+y=y&&false;
+assert x==2 && !y
+// non stampa nulla, nessuna eccezione viene lanciata

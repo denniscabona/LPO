@@ -1,0 +1,7 @@
+const c1 
+var x1
+fun foo
+call foo
+read c1
+read x1
+write x1 // no errors detected

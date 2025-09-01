@@ -1,0 +1,5 @@
+var x=1;
+x=x==1; // Static error: Found  BOOL, expected INT (senza opzione -ntc)
+assert x
+// non stampa nulla, nessuna eccezione viene lanciata con opzione -ntc
+

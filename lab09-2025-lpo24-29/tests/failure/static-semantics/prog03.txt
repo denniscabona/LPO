@@ -1,0 +1,4 @@
+var x=!true&&false; 
+if(!x){var x=3;assert x==3}; 
+print -x // Static error: Found  BOOL, expected INT
+

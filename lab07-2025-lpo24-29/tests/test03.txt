@@ -1,0 +1,10 @@
+cost c1 // syntax error
+var 1 // syntax error
+call c1 3 // syntax error
+call z1 // function 'z1' not declared
+fun foo 
+read foo // variable 'foo' not declared
+write foo // variable 'foo' not declared
+var foo
+fun foo // function 'foo' already declared
+const x1

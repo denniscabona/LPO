@@ -1,0 +1,8 @@
+var x=true;
+assert x&&x;
+assert x==true&&!x==false;
+assert !(x==false)&&!(x==false)
+// non stampa nulla, nessuna eccezione viene lanciata
+
+
+

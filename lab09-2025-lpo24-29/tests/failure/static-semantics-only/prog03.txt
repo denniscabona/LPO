@@ -1,0 +1,4 @@
+var p1=(true,1);
+assert p1==(true&&true,2+-1) && !(p1==(1,true)) // Static error: Found  (INT*BOOL), expected (BOOL*INT) (senza opzione -ntc)
+// non stampa nulla, nessuna eccezione viene lanciata con opzione -ntc
+

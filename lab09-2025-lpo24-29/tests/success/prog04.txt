@@ -1,0 +1,8 @@
+var p1=1,true;
+var p2=false,2;
+var p=p1,p2;// non stampa nulla, nessuna eccezione viene lanciata
+assert fst p==(1,true)&&snd p==(true&&false,1+1); 
+assert snd fst p&&true
+// non stampa nulla, nessuna eccezione viene lanciata
+
+

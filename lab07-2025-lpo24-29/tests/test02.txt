@@ -1,0 +1,10 @@
+const c1
+var x1
+call c1 // function 'c1' not declared
+call z1 // function 'z1' not declared
+fun foo
+read foo // variable 'foo' not declared
+write foo // variable 'foo' not declared
+var foo
+fun foo // function 'foo' already declared
+const x1 // variable 'x1' already declared

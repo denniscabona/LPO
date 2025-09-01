@@ -1,0 +1,1 @@
+assert 1==1,2==2 // Static error: Found  (BOOL*BOOL), expected BOOL

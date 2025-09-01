@@ -1,0 +1,3 @@
+print !40+5 // Static error: Found  INT, expected BOOL
+
+

@@ -1,0 +1,7 @@
+var x=10; 
+if(x==10){ 
+  var x=x+1,true; 
+  assert fst x == 11
+};
+assert x==10
+// non stampa nulla, nessuna eccezione viene lanciata

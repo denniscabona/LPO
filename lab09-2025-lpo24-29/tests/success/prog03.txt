@@ -1,0 +1,14 @@
+var b1=true; var b2=false;
+if(b1&&!b2){
+	assert true
+}
+else {
+     assert false
+};
+if(!(b1&&b2)){
+	assert true
+}
+else {
+     assert false
+}
+// non stampa nulla, nessuna eccezione viene lanciata

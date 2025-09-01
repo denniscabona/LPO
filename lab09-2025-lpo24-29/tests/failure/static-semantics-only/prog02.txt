@@ -1,0 +1,4 @@
+var x=1;
+if(x==0){assert !x}; // Static error: Found  INT, expected BOOL (senza opzione -ntc)
+assert !(x==0) 
+// non stampa nulla, nessuna eccezione viene lanciata con opzione -ntc
