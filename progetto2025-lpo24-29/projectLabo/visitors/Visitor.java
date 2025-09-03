@@ -24,9 +24,7 @@ public interface Visitor<T> {
 
 	T visitAssertStmt(Exp exp);
 
-	T visitForStmt(Exp parenthesisExp, Exp outerExp);	// aggiunta
-
-	T visitWhileStmt(Exp exp, Block block);				// aggiunta
+	T visitWhileStmt(Exp exp, Block block);				// aggiunta la definizione di visitWhileStmt
 
 	T visitBlock(StmtSeq stmtSeq);
 
@@ -38,17 +36,17 @@ public interface Visitor<T> {
 
 	T visitAnd(Exp left, Exp right);
 
-	T visitDiff(Exp left, Exp right);					// aggiunta				
+	T visitDiff(Exp left, Exp right);					// aggiunta	la definizione di visitDiff	
 
-	T visitUnion(Exp left, Exp right);					// aggiunta
+	T visitUnion(Exp left, Exp right);					// aggiunta la definizione di visitUnion
 
-	T visitIsIn(Exp left, Exp right);					// aggiunta
+	T visitIsIn(Exp left, Exp right);					// aggiunta la definizione di visitIsIn
 
-	T visitSize(Exp exp);								// aggiunta
+	T visitSize(Exp exp);								// aggiunta la definizione di visitSize
 
-	T visitSetLiteral(Exp exp);							// aggiunta
+	T visitSetLit(Exp exp);								// aggiunta la definizione di visitSetLit (OPEN_BLOCK Exp CLOSE_BLOCK)
 
-	T visitSetEnum(Variable var, Exp set, Exp elem);	// aggiunta
+	T visitSetEnum(Variable var, Exp set, Exp elem);	// aggiunta la definizione di visitSetEnum (OPEN_BLOCK (FOR IDENT IN Exp EXP_SEP) Exp CLOSE_BLOCK)
 
 	T visitFst(Exp exp);
 

@@ -14,7 +14,6 @@ import projectLabo.parser.ast.Variable;
 import projectLabo.visitors.Visitor;
 
 public class Typecheck implements Visitor<Type> {
-	// aggiungere i metodi mancanti
 
 	private final StaticEnv env = new StaticEnv();
 
@@ -170,39 +169,31 @@ public class Typecheck implements Visitor<Type> {
 		return BOOL;
 	}
 
-	@Override	// aggiunta la semantica statica di SetLiteral
-	public Type visitSetLiteral(Exp exp){
-		Type setType = exp.accept(this); // salvataggio del tipo di exp (INT, BOOL, PAIR o SET)
-		if(!(setType instanceof SetType)) // controllo che exp sia un Set
-			throw new TypecheckerException("L'operando di visitSetLiteral deve essere un insieme");
-		return setType;
-	}
-
 	@Override	// aggiunta la semantica statica di Diff
 	public Type visitDiff(Exp left, Exp right){
-		Type leftType = left.accept(this); // salvataggio dei tipi dei parametri (INT, BOOL, PAIR o SET)
+		Type leftType = left.accept(this); // salvataggio dei literal dei parametri (INT, BOOL, PAIR o SET)
 		Type righType = right.accept(this);
-		if(!(leftType instanceof SetType) || !(righType instanceof SetType)) // se non sono due insiemi lancia un errore
-			throw new TypecheckerException("Gli operandi di visitDiff devono essere insiemi");
+		if(!(leftType instanceof SetType) || !(righType instanceof SetType)) // controllo che siano due Set
+			throw new TypecheckerException("Gli operandi di visitUnion devono essere insiemi");
 
-		SetType leftSet = (SetType) leftType; // salvataggio dei tipi degli insiemi
+		SetType leftSet = (SetType) leftType; // cast degli insiemi a SetType
 		SetType rightSet = (SetType) righType;
-		if(!(leftSet.getElemType().equals(rightSet.getElemType()))) // se i tipi degli insiemi non corrispondono lancia un errore
-			throw new TypecheckerException("Gli operandi di visitDiff devono avere lo stesso tipo");
+		if(!(leftSet.getElemType().equals(rightSet.getElemType()))) // controllo che abbiano gli eleementi dello stesso tipo
+			throw new TypecheckerException("Gli operandi di visitUnion devono avere lo stesso tipo");
 
 		return leftSet.getElemType();
 	}
 
 	@Override	// aggiunta la semantica statica di Union
 	public Type visitUnion(Exp left, Exp right){
-		Type leftType = left.accept(this); // salvataggio dei tipi dei parametri (INT, BOOL, PAIR o SET)
+		Type leftType = left.accept(this); // salvataggio dei literal dei parametri (INT, BOOL, PAIR o SET)
 		Type righType = right.accept(this);
-		if(!(leftType instanceof SetType) || !(righType instanceof SetType)) // se non sono due insiemi lancia un errore
+		if(!(leftType instanceof SetType) || !(righType instanceof SetType)) // controllo che siano due Set
 			throw new TypecheckerException("Gli operandi di visitUnion devono essere insiemi");
 
-		SetType leftSet = (SetType) leftType; // salvataggio dei tipi degli insiemi
+		SetType leftSet = (SetType) leftType; // cast degli insiemi a SetType
 		SetType rightSet = (SetType) righType;
-		if(!(leftSet.getElemType().equals(rightSet.getElemType()))) // se i tipi degli insiemi non corrispondono lancia un errore
+		if(!(leftSet.getElemType().equals(rightSet.getElemType()))) // controllo che abbiano gli eleementi dello stesso tipo
 			throw new TypecheckerException("Gli operandi di visitUnion devono avere lo stesso tipo");
 
 		return leftSet.getElemType();
@@ -210,13 +201,13 @@ public class Typecheck implements Visitor<Type> {
 
 	@Override	// aggiunta della semantica statica di IsIN
 	public Type visitIsIn(Exp elem, Exp set){
-		Type setType = set.accept(this); // salvataggio del tipo di set (INT, BOOL, PAIR o SET)
+		Type setType = set.accept(this); // salvataggio del literal di set (INT, BOOL, PAIR o SET)
 		if(!(setType instanceof SetType)) // controllo che set sia un Set
 			throw new TypecheckerException("L'operando destro di visitIsIn non è un SetType");
 
 		Type elemType = elem.accept(this); 
-		SetType setSetType = (SetType) setType; // tipo degli elementi di set
-		if(!(elemType.equals(setSetType.getElemType()))) // controllo che elem sia dello stesso tipo di set
+		SetType setSetType = (SetType) setType; // cast di setSetType a SetType
+		if(!(elemType.equals(setSetType.getElemType()))) // controllo che elem sia dello stesso tipo degli elementi set
 			throw new TypecheckerException("L'operando sinistro di visitIsIn non è dello stesso tipo dell'insieme dell'operando destro");
 
 		return BOOL;
@@ -224,27 +215,32 @@ public class Typecheck implements Visitor<Type> {
 
 	@Override	// aggiunta la semantica statica di Size
 	public Type visitSize(Exp exp){
-		Type setType = exp.accept(this); // salvataggio del tipo di exp (INT, BOOL, PAIR o SET)
+		Type setType = exp.accept(this); // salvataggio del literal di exp (INT, BOOL, PAIR o SET)
 		if(!(setType instanceof SetType)) // controllo che exp sia un Set
 			throw new TypecheckerException("L'operando di visitSize non è un insieme");
 
 		return INT;
 	}
 
-	@Override
+	@Override	// aggiunta la semantica statica di SetLit (OPEN_BLOCK Exp CLOSE_BLOCK)
+	public Type visitSetLit(Exp exp){
+		Type setType = exp.accept(this); // salvataggio del literal di exp (INT, BOOL, PAIR o SET)
+		if(!(setType instanceof SetType)) // controllo che exp sia un Set
+			throw new TypecheckerException("L'operando di visitSetLiteral deve essere un insieme");
+		return setType;
+	}
+
+	@Override	// aggiunta la semantica statica di SetEnum (OPEN_BLOCK (FOR IDENT IN Exp EXP_SEP) Exp CLOSE_BLOCK)
 	public Type visitSetEnum(Variable var, Exp set, Exp elem){
-		Type setType = set.accept(this);
-		if(!(setType instanceof SetType))
+		Type setType = set.accept(this);  // salvataggio del literal di set (INT, BOOL, PAIR o SET)
+		if(!(setType instanceof SetType s))	// controllo che set sia un Set
 			throw new TypecheckerException("L'operando exp di visitSetEnum non è un insieme");
 
-		// Type varType = var.accept(this);
-		// Type elemType = elem.accept(this);
-		// SetType setSetType = (SetType) setType;
-		// Type elemFromSet = setSetType.getElemType();
+		Type typeOfSetElem = s.getElemType(); // salvataggio del tipo degli elementi del Set
+		env.dec(var, typeOfSetElem); // aggiorno env con var
+		Type elType = elem.accept(this);
 
-		// StaticEnv env2 = env.update(var, elemFromSet);
-
-		return BOOL;
+		return new SetType(elType);
 	}
 	
 	@Override
