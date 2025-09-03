@@ -9,8 +9,16 @@ import projectLabo.parser.ast.Stmt;
 import projectLabo.parser.ast.StmtSeq;
 import projectLabo.parser.ast.Variable;
 import projectLabo.visitors.Visitor;
+import projectLabo.visitors.typechecking.SetType;
+import projectLabo.visitors.typechecking.TypecheckerException;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
+import static projectLabo.parser.TokenType.BOOL;
+import static projectLabo.visitors.typechecking.AtomicType.BOOL;
+import static projectLabo.visitors.typechecking.AtomicType.INT;
 
 public class Execute implements Visitor<Value> {
 
@@ -77,16 +85,29 @@ public class Execute implements Visitor<Value> {
 		return null;
 	}
 
-	@Override // aggiunta la semantica dinanima di AssertStmt, se assert ritorna false lancia AssertionError()
+	@Override
 	public Value visitAssertStmt(Exp exp){
 		if(exp.accept(this).toBool())
 			return null;
 		throw new InterpreterException(new AssertionError());
 	}
 
-	@Override // aggiunta la semantica dinamica di AssignStmt, aggiorna l'environment con il nuovo valore
+	@Override 
 	public Value visitAssignStmt(Variable var, Exp exp){
 		env.update(var, exp.accept(this));
+		return null;
+	}
+
+	@Override	// aggiunta la semantica dinamica di WhileStmt
+	public Value visitWhileStmt(Exp exp, Block block){
+		while(exp.accept(this).toBool()){ // controllo che exp sia sempre vero in questo ambiente
+			env.enterLevel(); // crea un nuovo ambiente per ogni iterazione
+			try{
+				block.accept(this); 
+			}finally{	// serve per evitare anche in caso di errori venga sempre eseguito env.exitLevel()
+				env.exitLevel(); // esce dall'ambiente appena creato
+			}
+		}
 		return null;
 	}
 
@@ -153,6 +174,63 @@ public class Execute implements Visitor<Value> {
 	@Override // aggiunta della semantica dinamica di Not, inverte il bool dell'Exp
 	public Value visitNot(Exp exp){
 		return new BoolValue(!exp.accept(this).toBool());
+	}
+
+	@Override	// aggiunta la semantica dinamica di Diff
+	public Value visitDiff(Exp left, Exp right){
+		SetValue leftSet = left.accept(this).toSet(); // salvataggio dei literal dei parametri (INT, BOOL, PAIR o SET) e salva come SetValue
+		SetValue rightSet = right.accept(this).toSet();
+
+		Set<Value> result = new HashSet<>(leftSet.values()); // creazione dell'insieme risultante
+		result.removeAll(rightSet.values());
+		return new SetValue(result); // ritorna un nuovo SetValue, il tipo degli elementi coincide con i due tipi degli insiemi dei parametri
+	}
+
+	@Override	// aggiunta la semantica dinamica di Union
+	public Value visitUnion(Exp left, Exp right){
+		SetValue leftSet = left.accept(this).toSet(); // salvataggio dei literal dei parametri (INT, BOOL, PAIR o SET) e salva come SetValue
+		SetValue rightSet = right.accept(this).toSet();
+
+		Set<Value> result = new HashSet<>(leftSet.values()); // creazione dell'insieme risultante
+		result.addAll(rightSet.values());
+		return new SetValue(result); // ritorna un nuovo SetValue, il tipo degli elementi coincide con i due tipi degli insiemi dei parametri
+	}
+
+	@Override	// aggiunta della dinamica statica di IsIN
+	public Value visitIsIn(Exp elem, Exp set){
+		Value givenElem = elem.accept(this); // salvataggio del literal di elem (INT, BOOL, PAIR o SET)
+		SetValue givenSet = set.accept(this).toSet(); // salvataggio del literal di set (INT, BOOL, PAIR o SET) e salva come SetValue
+		return new BoolValue(givenSet.values().contains(givenElem)); // ritorna true se è presente, false altrimenti
+	}
+
+	@Override	// aggiunta la dinamica statica di Size
+	public Type visitSize(Exp exp){
+		Type setType = exp.accept(this); // salvataggio del literal di exp (INT, BOOL, PAIR o SET)
+		if(!(setType instanceof SetType)) // controllo che exp sia un Set
+			throw new TypecheckerException("L'operando di visitSize non è un insieme");
+
+		return INT;
+	}
+
+	@Override	// aggiunta la semantica statica di SetLit (OPEN_BLOCK Exp CLOSE_BLOCK)
+	public Type visitSetLit(Exp exp){
+		Type setType = exp.accept(this); // salvataggio del literal di exp (INT, BOOL, PAIR o SET)
+		if(!(setType instanceof SetType)) // controllo che exp sia un Set
+			throw new TypecheckerException("L'operando di visitSetLiteral deve essere un insieme");
+		return setType;
+	}
+
+	@Override	// aggiunta la semantica statica di SetEnum (OPEN_BLOCK (FOR IDENT IN Exp EXP_SEP) Exp CLOSE_BLOCK)
+	public Type visitSetEnum(Variable var, Exp set, Exp elem){
+		Type setType = set.accept(this);  // salvataggio del literal di set (INT, BOOL, PAIR o SET)
+		if(!(setType instanceof SetType s))	// controllo che set sia un Set
+			throw new TypecheckerException("L'operando exp di visitSetEnum non è un insieme");
+
+		Type typeOfSetElem = s.ElemType(); // salvataggio del tipo degli elementi del Set
+		env.dec(var, typeOfSetElem); // aggiorno env con var
+		Type elType = elem.accept(this);
+
+		return new SetType(elType);
 	}
 
 	@Override

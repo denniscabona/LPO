@@ -1,9 +1,5 @@
 package projectLabo.visitors.typechecking;
-
-import static projectLabo.parser.TokenType.PAIR_OP;
 import static projectLabo.visitors.typechecking.AtomicType.*;
-
-import java.util.Set;
 
 import projectLabo.environments.EnvironmentException;
 import projectLabo.parser.ast.Block;
@@ -60,11 +56,6 @@ public class Typecheck implements Visitor<Type> {
 			elseBlock.accept(this);
 		return null;
 	}
-
-	// @Override
-	// public Type visitForStmt(Exp parenthesisExp, Exp outerExp){
-	// 	return null;	
-	// }
 
 	@Override	// aggiunta la semantica statica di WhileStmt
 	public Type visitWhileStmt(Exp exp, Block block){
@@ -181,7 +172,7 @@ public class Typecheck implements Visitor<Type> {
 		if(!(leftSet.ElemType().equals(rightSet.ElemType()))) // controllo che abbiano gli eleementi dello stesso tipo
 			throw new TypecheckerException("Gli operandi di visitUnion devono avere lo stesso tipo");
 
-		return new SetType(leftSet.ElemType());
+		return new SetType(leftSet.ElemType()); // ritorna un nuovo Set, il tipo degli elementi coincide con i due insiemi di parametro
 	}
 
 	@Override	// aggiunta la semantica statica di Union
@@ -196,7 +187,7 @@ public class Typecheck implements Visitor<Type> {
 		if(!(leftSet.ElemType().equals(rightSet.ElemType()))) // controllo che abbiano gli eleementi dello stesso tipo
 			throw new TypecheckerException("Gli operandi di visitUnion devono avere lo stesso tipo");
 
-		return new SetType(leftSet.ElemType());
+		return new SetType(leftSet.ElemType()); // ritorna un nuovo Set, il tipo degli elementi coincide con i due insiemi di parametro
 	}
 
 	@Override	// aggiunta della semantica statica di IsIN

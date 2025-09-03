@@ -5,11 +5,11 @@ import static java.util.Objects.requireNonNull;
 import projectLabo.visitors.Visitor;
 
 public class SetEnum implements Exp{
-    protected final Variable var;
-    protected final Exp set;
-    protected final Exp elem;
+    private final Variable var;
+    private final Exp set;
+    private final Exp elem;
 
-    protected SetEnum(Variable var, Exp set, Exp elem){
+    public SetEnum(Variable var, Exp set, Exp elem){
         this.var = requireNonNull(var);
         this.set = requireNonNull(set);
         this.elem = requireNonNull(elem);

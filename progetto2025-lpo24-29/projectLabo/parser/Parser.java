@@ -7,6 +7,9 @@ import projectLabo.parser.ast.*;
 import static java.util.Objects.requireNonNull;
 import static projectLabo.parser.TokenType.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 
 /*
 Prog ::= StmtSeq EOF
@@ -303,6 +306,7 @@ public class Parser implements ParserInterface {
 		case NOT -> parseNot();
 		case FST -> parseFst();
 		case SND -> parseSnd();
+		case OPEN_BLOCK -> parseSetAtom();
 		default -> unexpectedTokenError();
 		};
 	}
@@ -378,4 +382,29 @@ public class Parser implements ParserInterface {
 		return exp;
 	}
 
+	private Exp parseSetAtom() throws ParserException{
+		consume(OPEN_BLOCK);
+		Exp setAtom;
+		if(tokenizer.tokenType() == FOR){
+			consume(FOR);
+			final Variable var = parseVariable();
+			consume(IN);
+			final var set = parseExp();
+			consume(EXP_SEP);
+			final var elem = parseExp();
+			setAtom = new SetEnum(var, set, elem);
+		}else{
+			Set<Exp> elements = new HashSet<>();
+			elements.add(parseExp());
+
+			while(tokenizer.tokenType() == EXP_SEP){
+				tokenizer.next();
+				elements.add(parseExp());
+			}
+
+			setAtom = new SetLit(elements);
+		}
+		consume(CLOSE_BLOCK);
+		return setAtom;
+	}
 }

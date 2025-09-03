@@ -1,7 +1,5 @@
 package projectLabo.visitors.typechecking;
 
-import static java.util.Objects.requireNonNull;
-
 public record SetType(Type type) implements Type {
 
     public static final String TYPE_NAME = "SET";

@@ -2,10 +2,14 @@ package projectLabo.visitors.execution;
 
 import static java.util.Objects.requireNonNull;
 
-public record SetValue(Value value) implements Value {
+import java.util.HashSet;
+import java.util.Set;
+
+public record SetValue(Set<Value> values) implements Value {
 
 	public SetValue {
-		requireNonNull(value);
+		requireNonNull(values);
+		values = new HashSet<>(values);
 	}
 
 	@Override
@@ -15,7 +19,7 @@ public record SetValue(Value value) implements Value {
 
 	@Override
 	public String toString() {
-		return String.format("Set<%s>", value);
+		return String.format("{%s}", values);
 	}
 
 }

@@ -13,8 +13,6 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import projectLabo.parser.ast.SetLit;
-
 public class Tokenizer implements TokenizerInterface {
 
     private record Token(TokenType type, String string, Integer intValue, Boolean boolValue) {
@@ -218,5 +216,4 @@ public class Tokenizer implements TokenizerInterface {
     public void close() throws IOException { // tokenizers are auto-closeable
         reader.close();
     }
-
 }
