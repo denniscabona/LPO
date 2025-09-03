@@ -9,6 +9,6 @@ public class And extends BinaryOp {
 	
 	@Override
 	public <T> T accept(Visitor<T> visitor) {
-		return visitor.visitAnd(left, right); // completata la definizione di accept
+		return visitor.visitAnd(left, right);
 	}
 }

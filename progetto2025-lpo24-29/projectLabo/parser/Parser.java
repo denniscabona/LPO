@@ -158,8 +158,13 @@ public class Parser implements ParserInterface {
 		return new IfStmt(exp, thenBlock, parseBlock());
 	}
 
-	private WhileStmt parseWhileStmt(){
+	/*
+	 * parse the while statement
+	 * Stmt ::= WHILE OPEN_PAR Exp CLOSE_PAR Block
+	 */
+	private WhileStmt parseWhileStmt() throws ParserException {
 		consume(WHILE);
+		return new WhileStmt(parseExp(), parseBlock());
 	}
 
 	/*
@@ -214,15 +219,41 @@ public class Parser implements ParserInterface {
 	/*
 	 * parses expressions, starting from the lowest precedence operator EQ which is
 	 * left-associative
-	 * Eq ::= Add (EQ Add)*
+	 * Eq ::= IsIn (EQ IsIn)*
 	 */
 	private Exp parseEq() throws ParserException {
-		var exp = parseAdd();
+		var exp = parseIsIn();
 		while (tokenizer.tokenType() == EQ) {
 			tokenizer.next();
-			exp = new Eq(exp, parseAdd());
+			exp = new Eq(exp, parseIsIn());
 		}
 		return exp;
+	}
+
+	private Exp parseIsIn() throws ParserException{
+		var exp = parseDiffUnion();
+		while(tokenizer.tokenType() == IN){
+			tokenizer.next();
+			exp = new In(exp, parseDiffUnion());
+		}
+		return exp;
+	}
+
+	private Exp parseDiffUnion() throws ParserException{
+		var exp = parseAdd();
+		while(tokenizer.tokenType() == ){
+			tokenizer.next();
+			exp = new DiffUnion(exp, parseAdd());
+		}
+		return exp;
+	}
+
+	private Exp parseSetOp() throws ParserException{
+		return switch (tokenizer.tokenType()) {
+		case DIFF -> parseNum();
+		case UNION -> parseVariable();
+		default -> unexpectedTokenError();
+		};
 	}
 
 	/*

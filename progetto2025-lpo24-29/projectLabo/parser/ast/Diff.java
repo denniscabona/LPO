@@ -1,6 +1,6 @@
 package projectLabo.parser.ast;
 
-import java.beans.Visibility;
+import projectLabo.visitors.Visitor;
 
 public class Diff extends BinaryOp{
     public Diff(Exp left, Exp right){

@@ -60,7 +60,7 @@ public interface Visitor<T> {
 
 	T visitSnd(Exp exp);
 
-	T visitNot(Exp exp); // aggiunta del visitor di Not
+	T visitNot(Exp exp);
 
 	T visitVariable(Variable var); // only in this case more efficient then T visitVariable(String name)
 

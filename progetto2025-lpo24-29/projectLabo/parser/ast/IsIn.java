@@ -2,13 +2,13 @@ package projectLabo.parser.ast;
 
 import projectLabo.visitors.Visitor;
 
-public class Union extends BinaryOp{
-    public Union(Exp left, Exp right) {
+public class IsIn  extends BinaryOp{
+	public IsIn(Exp left, Exp right) {
 		super(left, right);
 	}
 	
 	@Override
 	public <T> T accept(Visitor<T> visitor) {
-		return visitor.visitUnion(left, right);
-	}
+		return visitor.visitIsIn(left, right);
+	}    
 }
