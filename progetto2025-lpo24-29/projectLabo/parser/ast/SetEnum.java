@@ -2,12 +2,14 @@ package projectLabo.parser.ast;
 
 import static java.util.Objects.requireNonNull;
 
-public class SetEnum implements Exp{
-    private final Variable var;
-    private final Exp set;
-    private final Exp elem;
+import projectLabo.visitors.Visitor;
 
-    public SetEnum(Variable var, Exp set, Exp elem){
+public class SetEnum implements Exp{
+    protected final Variable var;
+    protected final Exp set;
+    protected final Exp elem;
+
+    protected SetEnum(Variable var, Exp set, Exp elem){
         this.var = requireNonNull(var);
         this.set = requireNonNull(set);
         this.elem = requireNonNull(elem);
@@ -15,6 +17,11 @@ public class SetEnum implements Exp{
 
 	@Override
 	public String toString() {
-		return String.format("{(%s %s %s %s) %s}", getClass().getSimpleName(), var, set, getClass().getSimpleName(), elem);
+		return String.format("{(FOR %s IN %s |) %s}", var, set, elem);
+	}
+
+	@Override
+	public <T> T accept(Visitor<T> visitor) {
+		return visitor.visitSetEnum(var, set, elem);
 	}
 }

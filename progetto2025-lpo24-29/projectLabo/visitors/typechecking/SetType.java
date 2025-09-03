@@ -6,7 +6,7 @@ public record SetType(Type type) implements Type {
 
     public static final String TYPE_NAME = "SET";
 
-	public Type getElemType(){
+	public Type ElemType(){
 		return type;
 	}
 

@@ -230,30 +230,35 @@ public class Parser implements ParserInterface {
 		return exp;
 	}
 
+	/*
+	 * parses expressions, starting from the lowest precedence operator IN which
+	 * is left-associative
+	 * IsIn ::= DiffUnion (IN DiffUnion)*
+	 */
 	private Exp parseIsIn() throws ParserException{
 		var exp = parseDiffUnion();
 		while(tokenizer.tokenType() == IN){
 			tokenizer.next();
-			exp = new In(exp, parseDiffUnion());
+			exp = new IsIn(exp, parseDiffUnion());
 		}
 		return exp;
 	}
 
-	private Exp parseDiffUnion() throws ParserException{
+	/*
+	 * parses expressions, starting from the lowest precedence operators (DIFF, UNION) which
+	 * are left-associative
+	 * DiffUnion ::= Add (SetOp Add)*
+	 */
+	private Exp parseDiffUnion() throws ParserException{ // da fare
 		var exp = parseAdd();
-		while(tokenizer.tokenType() == ){
+		while(tokenizer.tokenType() == DIFF || tokenizer.tokenType() == UNION){
 			tokenizer.next();
-			exp = new DiffUnion(exp, parseAdd());
+			if(tokenizer.tokenType() == DIFF) // SetOp implementato qui dentro invece che con un parser esterno
+				exp = new Diff(exp, parseAdd()); // parseDiff
+			else
+				exp = new Union(exp, parseAdd()); // parseUniom
 		}
 		return exp;
-	}
-
-	private Exp parseSetOp() throws ParserException{
-		return switch (tokenizer.tokenType()) {
-		case DIFF -> parseNum();
-		case UNION -> parseVariable();
-		default -> unexpectedTokenError();
-		};
 	}
 
 	/*
@@ -286,7 +291,7 @@ public class Parser implements ParserInterface {
 
 	/*
 	 * parses expressions of type Atom
-	 * Atom ::= FST Atom | SND Atom | MINUS Atom | NOT Atom | BOOL | NUM | IDENT | OPEN_PAR Exp CLOSE_PAR
+	 * Atom ::= FST Atom | SND Atom | MINUS Atom | NOT Atom | BOOL | NUM | IDENT | OPEN_PAR Exp CLOSE_PAR | SetAtom
 	 */
 	private Exp parseAtom() throws ParserException {
 		return switch (tokenizer.tokenType()) {
