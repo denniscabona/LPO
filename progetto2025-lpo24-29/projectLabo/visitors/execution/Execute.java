@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import projectLabo.environments.EnvironmentException;
 import projectLabo.parser.ast.Block;
 import projectLabo.parser.ast.Exp;
+import projectLabo.parser.ast.SetLit;
 import projectLabo.parser.ast.Stmt;
 import projectLabo.parser.ast.StmtSeq;
 import projectLabo.parser.ast.Variable;
@@ -204,33 +205,34 @@ public class Execute implements Visitor<Value> {
 	}
 
 	@Override	// aggiunta la dinamica statica di Size
-	public Type visitSize(Exp exp){
-		Type setType = exp.accept(this); // salvataggio del literal di exp (INT, BOOL, PAIR o SET)
-		if(!(setType instanceof SetType)) // controllo che exp sia un Set
-			throw new TypecheckerException("L'operando di visitSize non è un insieme");
-
-		return INT;
+	public Value visitSize(Exp exp){
+		SetValue setValue = exp.accept(this).toSet(); // salvataggio del literal di exp (INT, BOOL, PAIR o SET)
+		return new IntValue(setValue.values().size());
 	}
 
-	@Override	// aggiunta la semantica statica di SetLit (OPEN_BLOCK Exp CLOSE_BLOCK)
-	public Type visitSetLit(Exp exp){
-		Type setType = exp.accept(this); // salvataggio del literal di exp (INT, BOOL, PAIR o SET)
-		if(!(setType instanceof SetType)) // controllo che exp sia un Set
-			throw new TypecheckerException("L'operando di visitSetLiteral deve essere un insieme");
-		return setType;
+	@Override	// aggiunta la semantica dinamica di SetLit (OPEN_BLOCK Exp CLOSE_BLOCK)
+	public Value visitSetLit(Exp exp){
+		Value elem = exp.accept(this); // salvataggio del literal di exp (INT, BOOL, PAIR o SET)
+		return new SetValue(Set.of(elem)); // creazione di un insieme con solo elem
 	}
 
-	@Override	// aggiunta la semantica statica di SetEnum (OPEN_BLOCK (FOR IDENT IN Exp EXP_SEP) Exp CLOSE_BLOCK)
-	public Type visitSetEnum(Variable var, Exp set, Exp elem){
-		Type setType = set.accept(this);  // salvataggio del literal di set (INT, BOOL, PAIR o SET)
-		if(!(setType instanceof SetType s))	// controllo che set sia un Set
-			throw new TypecheckerException("L'operando exp di visitSetEnum non è un insieme");
+	@Override	// aggiunta la semantica dinamica di SetEnum (OPEN_BLOCK (FOR IDENT IN Exp EXP_SEP) Exp CLOSE_BLOCK)
+	public Value visitSetEnum(Variable var, Exp set, Exp elem){
+		
+		SetValue setValue = set.accept(this).toSet();
+		
+		DynamicEnv newEnv = env;
+		newEnv.enterLevel();
+		newEnv.dec(var, new IntValue(0));
 
-		Type typeOfSetElem = s.ElemType(); // salvataggio del tipo degli elementi del Set
-		env.dec(var, typeOfSetElem); // aggiorno env con var
-		Type elType = elem.accept(this);
+		Set<Value> resultSet = new HashSet<>();
+		for(Value setElem : setValue.values()){
+			newEnv.update(var, setElem);
+			Value elemValue = elem.accept(this);
+			resultSet.add(elemValue);
+		}
 
-		return new SetType(elType);
+		return new SetValue(resultSet);
 	}
 
 	@Override

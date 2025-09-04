@@ -306,6 +306,7 @@ public class Parser implements ParserInterface {
 		case NOT -> parseNot();
 		case FST -> parseFst();
 		case SND -> parseSnd();
+		case SIZE -> parseSize();
 		case OPEN_BLOCK -> parseSetAtom();
 		default -> unexpectedTokenError();
 		};
@@ -371,6 +372,15 @@ public class Parser implements ParserInterface {
 	}
 
 	/*
+	 * parses expressions with unary operator SIZE
+	 * Atom ::= SIZE Atom
+	 */
+	private Size parseSize() throws ParserException{
+		consume(SIZE);
+		return new Size(parseAtom());
+	}
+
+	/*
 	 * parses expressions delimited by parentheses
 	 * Atom ::= OPEN_PAR Exp CLOSE_PAR
 	 */
@@ -394,15 +404,12 @@ public class Parser implements ParserInterface {
 			final var elem = parseExp();
 			setAtom = new SetEnum(var, set, elem);
 		}else{
-			Set<Exp> elements = new HashSet<>();
-			elements.add(parseExp());
+			setAtom = new SetLit(parseExp());
 
 			while(tokenizer.tokenType() == EXP_SEP){
 				tokenizer.next();
-				elements.add(parseExp());
+				Exp aux = new SetLit(parseExp());
 			}
-
-			setAtom = new SetLit(elements);
 		}
 		consume(CLOSE_BLOCK);
 		return setAtom;

@@ -2,18 +2,11 @@ package projectLabo.parser.ast;
 
 import projectLabo.visitors.Visitor;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class SetLit implements Exp{
-	private final Set<Exp> elements;
+	private final Exp exp;
 
-	public SetLit(Set<Exp> exp) {
-		elements = new HashSet<>(exp);
-	}
-
-	public Set<Exp> Elements(){
-		return elements;
+	public SetLit(Exp exp) {
+		this.exp = exp;
 	}
 
 	@Override

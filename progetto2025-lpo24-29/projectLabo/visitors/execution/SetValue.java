@@ -18,8 +18,8 @@ public record SetValue(Set<Value> values) implements Value {
 	}
 
 	@Override
-	public String toString() {
-		return String.format("{%s}", values);
+	public String toString() { // da controllare
+		return String.format("setOfSize(" + values.size() + ")");
 	}
 
 }
