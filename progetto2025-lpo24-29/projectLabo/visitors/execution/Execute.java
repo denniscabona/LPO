@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
-import static projectLabo.parser.TokenType.BOOL;
+//import static projectLabo.parser.TokenType.BOOL;
 import static projectLabo.visitors.typechecking.AtomicType.BOOL;
 import static projectLabo.visitors.typechecking.AtomicType.INT;
 
@@ -88,10 +88,10 @@ public class Execute implements Visitor<Value> {
 
 	@Override
 	public Value visitAssertStmt(Exp exp){
-		if(exp.accept(this).toBool())
-			return null;
-		throw new InterpreterException(new AssertionError());
-	}
+		if(!(exp.accept(this).toBool()))
+		    throw new InterpreterException(new AssertionError());
+	    return null;
+    }
 
 	@Override 
 	public Value visitAssignStmt(Variable var, Exp exp){
@@ -211,8 +211,8 @@ public class Execute implements Visitor<Value> {
 	}
 
 	@Override	// aggiunta la semantica dinamica di SetLit (OPEN_BLOCK Exp CLOSE_BLOCK)
-	public Value visitSetLit(Exp exp){
-		Value elem = exp.accept(this); // salvataggio del literal di exp (INT, BOOL, PAIR o SET)
+	public Value visitSetLit(SetLit set){
+		Value elem = set.getExpSetLit().accept(this); // salvataggio del literal di exp (INT, BOOL, PAIR o SET)
 		return new SetValue(Set.of(elem)); // creazione di un insieme con solo elem
 	}
 
@@ -220,7 +220,7 @@ public class Execute implements Visitor<Value> {
 	public Value visitSetEnum(Variable var, Exp set, Exp elem){
 		
 		SetValue setValue = set.accept(this).toSet();
-		
+
 		DynamicEnv newEnv = env;
 		newEnv.enterLevel();
 		newEnv.dec(var, new IntValue(0));
@@ -231,7 +231,7 @@ public class Execute implements Visitor<Value> {
 			Value elemValue = elem.accept(this);
 			resultSet.add(elemValue);
 		}
-
+        newEnv.exitLevel();
 		return new SetValue(resultSet);
 	}
 

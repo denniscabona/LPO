@@ -9,8 +9,12 @@ public class SetLit implements Exp{
 		this.exp = exp;
 	}
 
+    public Exp getExpSetLit(){
+        return exp;
+    }
+
 	@Override
 	public <T> T accept(Visitor<T> visitor) {
 		return visitor.visitSetLit(this);
-	}    
+	}
 }

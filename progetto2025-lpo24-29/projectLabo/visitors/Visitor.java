@@ -1,10 +1,6 @@
 package projectLabo.visitors;
 
-import projectLabo.parser.ast.Block;
-import projectLabo.parser.ast.Exp;
-import projectLabo.parser.ast.Stmt;
-import projectLabo.parser.ast.StmtSeq;
-import projectLabo.parser.ast.Variable;
+import projectLabo.parser.ast.*;
 
 public interface Visitor<T> {
 
@@ -44,7 +40,7 @@ public interface Visitor<T> {
 
 	T visitSize(Exp exp);								// aggiunta la definizione di visitSize
 
-	T visitSetLit(Exp exp);								// aggiunta la definizione di visitSetLit (OPEN_BLOCK Exp CLOSE_BLOCK)
+	T visitSetLit(SetLit set);								// aggiunta la definizione di visitSetLit (OPEN_BLOCK Exp CLOSE_BLOCK)
 
 	T visitSetEnum(Variable var, Exp set, Exp elem);	// aggiunta la definizione di visitSetEnum (OPEN_BLOCK (FOR IDENT IN Exp EXP_SEP) Exp CLOSE_BLOCK)
 
