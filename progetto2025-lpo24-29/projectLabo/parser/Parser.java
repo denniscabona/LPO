@@ -7,10 +7,6 @@ import projectLabo.parser.ast.*;
 import static java.util.Objects.requireNonNull;
 import static projectLabo.parser.TokenType.*;
 
-import java.util.HashSet;
-import java.util.Set;
-
-
 /*
 Prog ::= StmtSeq EOF
 StmtSeq ::= Stmt (STMT_SEP StmtSeq)?
@@ -406,10 +402,10 @@ public class Parser implements ParserInterface {
 		}else{
 			setAtom = new SetLit(parseExp());
 
-			while(tokenizer.tokenType() == EXP_SEP){
-				tokenizer.next();
-				Exp aux = new SetLit(parseExp());
-			}
+			while(tokenizer.tokenType() == EXP_SEP) {
+                tokenizer.next();
+                parseExp();
+            }
 		}
 		consume(CLOSE_BLOCK);
 		return setAtom;

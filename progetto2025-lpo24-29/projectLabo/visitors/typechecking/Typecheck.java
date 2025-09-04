@@ -169,10 +169,10 @@ public class Typecheck implements Visitor<Type> {
 
 		SetType leftSet = (SetType) leftType; // cast degli insiemi a SetType
 		SetType rightSet = (SetType) righType;
-		if(!(leftSet.ElemType().equals(rightSet.ElemType()))) // controllo che abbiano gli eleementi dello stesso tipo
+		if(!(leftSet.type().equals(rightSet.type()))) // controllo che abbiano gli eleementi dello stesso tipo
 			throw new TypecheckerException("Gli operandi di visitUnion devono avere lo stesso tipo");
 
-		return new SetType(leftSet.ElemType()); // ritorna un nuovo Set, il tipo degli elementi coincide con i due insiemi di parametro
+		return new SetType(leftSet.type()); // ritorna un nuovo Set, il tipo degli elementi coincide con i due insiemi di parametro
 	}
 
 	@Override	// aggiunta la semantica statica di Union
@@ -184,10 +184,10 @@ public class Typecheck implements Visitor<Type> {
 
 		SetType leftSet = (SetType) leftType; // cast degli insiemi a SetType
 		SetType rightSet = (SetType) righType;
-		if(!(leftSet.ElemType().equals(rightSet.ElemType()))) // controllo che abbiano gli eleementi dello stesso tipo
+		if(!(leftSet.type().equals(rightSet.type()))) // controllo che abbiano gli eleementi dello stesso tipo
 			throw new TypecheckerException("Gli operandi di visitUnion devono avere lo stesso tipo");
 
-		return new SetType(leftSet.ElemType()); // ritorna un nuovo Set, il tipo degli elementi coincide con i due insiemi di parametro
+		return new SetType(leftSet.type()); // ritorna un nuovo Set, il tipo degli elementi coincide con i due insiemi di parametro
 	}
 
 	@Override	// aggiunta della semantica statica di IsIN
@@ -198,7 +198,7 @@ public class Typecheck implements Visitor<Type> {
 
 		Type elemType = elem.accept(this); 
 		SetType setSetType = (SetType) setType; // cast di setSetType a SetType
-		if(!(elemType.equals(setSetType.ElemType()))) // controllo che elem sia dello stesso tipo degli elementi set
+		if(!(elemType.equals(setSetType.type()))) // controllo che elem sia dello stesso tipo degli elementi set
 			throw new TypecheckerException("L'operando sinistro di visitIsIn non è dello stesso tipo dell'insieme dell'operando destro");
 
 		return BOOL;
@@ -227,7 +227,7 @@ public class Typecheck implements Visitor<Type> {
 		if(!(setType instanceof SetType s))	// controllo che set sia un Set
 			throw new TypecheckerException("L'operando exp di visitSetEnum non è un insieme");
 
-		Type typeOfSetElem = s.ElemType(); // salvataggio del tipo degli elementi del Set
+		Type typeOfSetElem = s.type(); // salvataggio del tipo degli elementi del Set
 		env.dec(var, typeOfSetElem); // aggiorno env con var
 		Type elType = elem.accept(this);
 
