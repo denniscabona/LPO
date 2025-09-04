@@ -158,72 +158,40 @@ public class Typecheck implements Visitor<Type> {
 
 	@Override	// aggiunta la semantica statica di Diff
 	public Type visitDiff(Exp left, Exp right){
-//		Type leftType = left.accept(this); // salvataggio dei literal dei parametri (INT, BOOL, PAIR o SET)
-//		Type righType = right.accept(this);
-//		if(!(leftType instanceof SetType) || !(righType instanceof SetType)) // controllo che siano due Set
-//			throw new TypecheckerException("Gli operandi di visitUnion devono essere insiemi");
-
-//		SetType leftSet = (SetType) leftType; // cast degli insiemi a SetType
-//		SetType rightSet = (SetType) righType;
-//		if(!(leftSet.type().equals(rightSet.type()))) // controllo che abbiano gli eleementi dello stesso tipo
-//			throw new TypecheckerException("Gli operandi di visitUnion devono avere lo stesso tipo");
         SetType leftSet = left.accept(this).toSetType();
         SetType rightSet = right.accept(this).toSetType();
 
-        leftSet.type().checkEqual(rightSet.type());
+        leftSet.checkEqual(rightSet);
 		return new SetType(leftSet.type()); // ritorna un nuovo Set, il tipo degli elementi coincide con i due insiemi di parametro
 	}
 
 	@Override	// aggiunta la semantica statica di Union
 	public Type visitUnion(Exp left, Exp right){
-//		Type leftType = left.accept(this); // salvataggio dei literal dei parametri (INT, BOOL, PAIR o SET)
-//		Type righType = right.accept(this);
-//		if(!(leftType instanceof SetType) || !(righType instanceof SetType)) // controllo che siano due Set
-//			throw new TypecheckerException("Gli operandi di visitUnion devono essere insiemi");
-//
-//		SetType leftSet = (SetType) leftType; // cast degli insiemi a SetType
-//		SetType rightSet = (SetType) righType;
-//		if(!(leftSet.type().equals(rightSet.type()))) // controllo che abbiano gli eleementi dello stesso tipo
-//			throw new TypecheckerException("Gli operandi di visitUnion devono avere lo stesso tipo");
         SetType leftSet = left.accept(this).toSetType();
         SetType rightSet = right.accept(this).toSetType();
 
-        leftSet.type().checkEqual(rightSet.type());
+        leftSet.checkEqual(rightSet);
 		return new SetType(leftSet.type()); // ritorna un nuovo Set, il tipo degli elementi coincide con i due insiemi di parametro
 	}
 
 	@Override	// aggiunta della semantica statica di IsIN
 	public Type visitIsIn(Exp elem, Exp set){
-//		Type setType = set.accept(this); // salvataggio del literal di set (INT, BOOL, PAIR o SET)
-//		if(!(setType instanceof SetType)) // controllo che set sia un Set
-//			throw new TypecheckerException("L'operando destro di visitIsIn non è un SetType");
-//
-//		Type elemType = elem.accept(this);
-//		SetType setSetType = (SetType) setType; // cast di setSetType a SetType
-//
         SetType setType = set.accept(this).toSetType();
         Type elemType = elem.accept(this);
 
-//        if(!(elemType.equals(setType.type()))) // controllo che elem sia dello stesso tipo degli elementi set
-//			throw new TypecheckerException("L'operando sinistro di visitIsIn non è dello stesso tipo dell'insieme dell'operando destro");
-        elemType.checkEqual(setType.type());
+        elemType.checkEqual(setType);
 		return BOOL;
 	}
 
 	@Override	// aggiunta la semantica statica di Size
 	public Type visitSize(Exp exp){
 		SetType setType = exp.accept(this).toSetType(); // salvataggio del literal di exp (INT, BOOL, PAIR o SET)
-//		if(!(setType instanceof SetType)) // controllo che exp sia un Set
-//			throw new TypecheckerException("L'operando di visitSize non è un insieme");
 
 		return INT;
 	}
 
 	//@Override	// aggiunta la semantica statica di SetLit (OPEN_BLOCK Exp CLOSE_BLOCK)
 	public Type visitSetLit(SetLit set){
-		//Type expType = exp.accept(this).toSetType(); // salvataggio del literal di exp (INT, BOOL, PAIR o SET)
-		//if(!(setType instanceof SetType)) // controllo che exp sia un Set
-			//throw new TypecheckerException("L'operando di visitSetLiteral deve essere un insieme");
 		return new SetType(set.getExpSetLit().accept(this));
 	}
 

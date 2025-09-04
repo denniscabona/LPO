@@ -12,7 +12,7 @@ public record SetType(Type type) implements Type {
 
 	@Override
 	public String toString() {
-		return String.format("%s<%s>",getClass().getName(), type);
+		return String.format("%s set", type);
 	}
 
 	@Override

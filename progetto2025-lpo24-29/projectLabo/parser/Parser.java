@@ -248,14 +248,16 @@ public class Parser implements ParserInterface {
 	 * are left-associative
 	 * DiffUnion ::= Add (SetOp Add)*
 	 */
-	private Exp parseDiffUnion() throws ParserException{ // da fare
+	private Exp parseDiffUnion() throws ParserException{ 
 		var exp = parseAdd();
 		while(tokenizer.tokenType() == DIFF || tokenizer.tokenType() == UNION){
-			tokenizer.next();
-			if(tokenizer.tokenType() == DIFF) // SetOp implementato qui dentro invece che con un parser esterno
+			if(tokenizer.tokenType() == DIFF){ // SetOp implementato qui dentro invece che con un parser esterno
+				consume(DIFF);
 				exp = new Diff(exp, parseAdd()); // parseDiff
-			else
-				exp = new Union(exp, parseAdd()); // parseUniom
+			}else{
+				consume(UNION);
+				exp = new Union(exp, parseAdd()); // parseUnion
+			}
 		}
 		return exp;
 	}
